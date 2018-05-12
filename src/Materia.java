@@ -90,8 +90,8 @@ public class Materia {
 	
 	//Variables de la clase
 	String nombre;
-	int hora;
-	int dia;
-	int semestre;
+	private int hora;
+	private int dia;
+	private int semestre;
 	
 }

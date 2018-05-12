@@ -53,6 +53,6 @@ public class Estudiante {
 	}
 	
 	//Variables de la clase
-	String nombre ;
-	int semestre ;
+	private String nombre ;
+	private int semestre ;
 }

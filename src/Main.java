@@ -1,5 +1,6 @@
 import acm.program.*;
 import java.util.*;
+import java.io.*;
 
 /**
  * @author LosCapos
@@ -31,8 +32,8 @@ public class Main extends ConsoleProgram {
 					materiasEstudiante.add(materia);
 				}
 			}
-			println(materiasEstudiante);
-			println("El horario del estudiante se ha generado con exito.");
+			String nombreArchivo = readLine("Ingrese la ubicacion completa del directorio donde desea que se guarde el horario del estudiante: ") + estudianteSolicitado + ".csv";
+			crearTabla(materiasEstudiante, nombreArchivo);
 		}
 	}
 	
@@ -46,13 +47,13 @@ public class Main extends ConsoleProgram {
 			int numeroMaterias = readInt("Digite el numero de materias que tiene el semestre " + i + ": ");
 			for (int j= 1 ; j<= numeroMaterias ; j++) {
 				String nombreMateria = readLine("Digite el nombre de la materia " + j + ": ").toUpperCase();
-				int diaMateria = readInt("Digite el numero del dia de la matera " + j + ": ");
-				int horaMateria = readInt("Digite la hora inicial de la materia " + j + ": ");
-				if(diaMateria>7 || diaMateria<1) {
+				int diaMateria = readInt("Digite el numero del dia de la materia " + j + ": ");
+				if(diaMateria>5 || diaMateria<1) {
 					println ("Por favor digite un dia de la semana valido, teniendo en cuenta que el lunes es el dia #1.");
 					j--;
 					continue;
 				}
+				int horaMateria = readInt("Digite la hora inicial de la materia " + j + ": ");
 				int semestreMateria = i;
 				listaMaterias.add(new Materia(nombreMateria, diaMateria, horaMateria, semestreMateria));
 			}
@@ -84,6 +85,7 @@ public class Main extends ConsoleProgram {
 	 * @param busquedaEstudiante
 	 * @param lista
 	 * @return
+	 * El metodo busca un estudiante por medio del nombre del mismo, y retorna el semestre en el que se encuentra
 	 */
 	public int buscarEstudiante(String busquedaEstudiante , ArrayList<Estudiante> lista) {
 		for(Estudiante e : lista){
@@ -94,8 +96,49 @@ public class Main extends ConsoleProgram {
 		return -1;
 	}
 	
-	public void crearTabla (ArrayList<Materia> lista) {
-		
+	/**
+	 * @param lista
+	 * @param directorio
+	 * El metodo escribe un archivo csv con el horario completo del estudiante que el usuario haya solicitado
+	 */
+	public void crearTabla (ArrayList<Materia> lista, String directorio) {
+		try {
+			PrintWriter escritor = new PrintWriter(new FileWriter(directorio));
+			String tabla = "Hora,Lunes,Martes,Miercoles,Jueves,Viernes\n";
+			ArrayList<Integer> listaHoras = new ArrayList<Integer>();
+			for (Materia materia : lista) {
+				Integer hora = Integer.valueOf(materia.getHora());
+				if (!listaHoras.contains(hora))listaHoras.add(hora);
+			}
+			Collections.sort(listaHoras);
+			for (int i = 0; i<listaHoras.size(); i++) {
+				int hora = listaHoras.get(i).intValue();
+				String materiaLunes = "";
+				String materiaMartes = "";
+				String materiaMiercoles = "";
+				String materiaJueves = "";
+				String materiaViernes = "";
+				for (Materia materia : lista) {
+					if (materia.getHora() == hora) {
+						switch (materia.getDia()) {
+						case 1: materiaLunes += materia.getNombre(); break;
+						case 2: materiaMartes += materia.getNombre(); break;
+						case 3: materiaMiercoles += materia.getNombre(); break;
+						case 4: materiaJueves += materia.getNombre(); break;
+						default: materiaViernes += materia.getNombre(); break;
+						}
+					}
+				}
+				String fila = hora + "," + materiaLunes + "," + materiaMartes + "," + materiaMiercoles + "," + materiaJueves + "," + materiaViernes;
+				fila += "\n";
+				tabla += fila;
+			}
+			escritor.print(tabla);
+			escritor.close();
+			println("El horario del estudiante se ha generado con exito.");
+		} catch (IOException e) {
+			println("El archivo no ha podido generarse correctamente");
+		}
 	}
 	
 	int numeroSemestres;
