@@ -14,10 +14,8 @@ public class Main extends ConsoleProgram {
 	public void run() {
 		println("Este programa le permitira generar y administrar horarios estudiantiles. A continuacion, se le solicitara informacion correspondiente a las materias del programa academico.");
 		inscribirMaterias();
-		println(listaMaterias);
 		println("A continuacion se le pedira la informacion de los estudiantes que desea inscribir.");
 		inscribirEstudiantes();
-		println(listaEstudiantes);
 		while (true) {
 			String estudianteSolicitado = readLine("Ingrese el nombre del estudiante del cual "
 					+ "desea obtener el horario: ").toUpperCase();
@@ -55,6 +53,10 @@ public class Main extends ConsoleProgram {
 				}
 				int horaMateria = readInt("Digite la hora inicial de la materia " + j + ": ");
 				int semestreMateria = i;
+				if (verificarMateria(diaMateria, horaMateria, semestreMateria)) {
+					j--;
+					continue;
+				}
 				listaMaterias.add(new Materia(nombreMateria, diaMateria, horaMateria, semestreMateria));
 			}
 		}
@@ -69,6 +71,7 @@ public class Main extends ConsoleProgram {
 		for (int i=1 ; i<= numestudiantes ; i++) {
 			while (true) {
 				String nombreEstudiante = readLine("Digite el nombre del estudiante  " + i + ": ").toUpperCase();
+				if (verificarEstudiante(nombreEstudiante)) continue;
 				int semestreEstudiante = readInt ("Digite el semestre en el que el estudiante " + i + " se encuentra: ");
 				if (semestreEstudiante > numeroSemestres) {
 					println ("Semestre no valido. Por favor inscriba al estudiante en uno de los semestres existentes en la carrera.");
@@ -139,6 +142,26 @@ public class Main extends ConsoleProgram {
 		} catch (IOException e) {
 			println("El archivo no ha podido generarse correctamente");
 		}
+	}
+	
+	public boolean verificarEstudiante(String nombre) {
+		for (Estudiante estudiante : listaEstudiantes) {
+			if (nombre.equals(estudiante.getNombre())) {
+				println("Ya existe un estudiante registrado con ese nombre. Por favor ingrese un nombre diferente.");
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean verificarMateria(int dia, int hora, int semestre) {
+		for (Materia materia : listaMaterias) {
+			if (semestre == materia.getSemestre() && dia == materia.getDia() && hora == materia.getHora()) {
+				println("Ya existe una materia en este semestre, que tiene lugar al mismo tiempo. Por favor cambie la informacion ingresada");
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	int numeroSemestres;
