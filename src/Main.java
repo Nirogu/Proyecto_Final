@@ -16,7 +16,6 @@ public class Main extends ConsoleProgram {
 		inscribirSalones();
 		println("A continuacion se le pedira la informacion de las materias que desea agregar al programa academico.");
 		inscribirMaterias();
-		println(listaMaterias);
 		println("A continuacion se le pedira la informacion de los estudiantes que desea inscribir.");
 		inscribirEstudiantes();
 		while (true) {
@@ -38,6 +37,10 @@ public class Main extends ConsoleProgram {
 		}
 	}
 
+	/**
+	 * El metodo recibe del usuario la información de los salones existentes en el programa academico.
+	 * Cada salon es anexada al ArrayList de salones, para su uso posterior.
+	 */
 	private void inscribirSalones() {
 		int numSalones = readInt("Por favor digite el numero de salones: ");
 		for (int i=1 ; i<= numSalones ; i++) {
@@ -73,16 +76,28 @@ public class Main extends ConsoleProgram {
 					j--;
 					continue;
 				}
-				int k = j;
-				for (Materia materia : listaMaterias) {
-					if (materia.getSalon() == listaSalones.get(k%listaSalones.size()) && materia.getDia() == diaMateria && materia.getHora() == horaMateria) {
-						k++;
-					}
-				}
-				Salon salonMateria = listaSalones.get(k%(listaSalones.size()-1));
+				Salon salonMateria = listaSalones.get(revisarSalon(j, diaMateria, horaMateria)%listaSalones.size());
 				listaMaterias.add(new Materia(nombreMateria, diaMateria, horaMateria, semestreMateria, salonMateria));
 			}
 		}
+	}
+	
+	/**
+	 * @param j
+	 * @param dia
+	 * @param hora
+	 * @return
+	 * El metodo verifica que no exista una materia usando el salon dado, a la misma hora y dia que la materia que se esta intentando inscribir.
+	 */
+	public int revisarSalon(int j, int dia, int hora) {
+		for (int i = 0; i<listaMaterias.size(); i++) {
+			Materia materia = listaMaterias.get(i);
+			if (materia.getSalon() == listaSalones.get(j%listaSalones.size()) && materia.getDia() == dia && materia.getHora() == hora) {
+				j++;
+				i = -1;
+			}
+		}
+		return j;
 	}
 	
 	/**
@@ -93,7 +108,7 @@ public class Main extends ConsoleProgram {
 		int numEstudiantes = readInt("Por favor digite el numero de estudiantes: ");
 		for (int i=1 ; i<= numEstudiantes ; i++) {
 			while (true) {
-				String nombreEstudiante = readLine("Digite el nombre del estudiante  " + i + ": ").toUpperCase();
+				String nombreEstudiante = readLine("Digite el nombre del estudiante " + i + ": ").toUpperCase();
 				if (verificarEstudiante(nombreEstudiante)) continue;
 				int semestreEstudiante = readInt ("Digite el semestre en el que el estudiante " + i + " se encuentra: ");
 				if (semestreEstudiante > numeroSemestres) {
@@ -106,6 +121,7 @@ public class Main extends ConsoleProgram {
 		}
 	}
 	
+
 	/**
 	 * @param busquedaEstudiante
 	 * @param lista
@@ -166,6 +182,12 @@ public class Main extends ConsoleProgram {
 		}
 	}
 	
+
+	/**
+	 * @param nombre
+	 * @return
+	 * El metodo revisa en la lista de estudiantes, si ya existe un estudiante con el mismo nombre del estudiante que se esta intentando crear
+	 */
 	public boolean verificarEstudiante(String nombre) {
 		for (Estudiante estudiante : listaEstudiantes) {
 			if (nombre.equals(estudiante.getNombre())) {
@@ -176,6 +198,14 @@ public class Main extends ConsoleProgram {
 		return false;
 	}
 	
+
+	/**
+	 * @param dia
+	 * @param hora
+	 * @param semestre
+	 * @return
+	 * El metodo revisa en la lista de materias, si ya existe una materia con el mismo horario y semestre de la materia que se esta intentando crear
+	 */
 	public boolean verificarMateria(int dia, int hora, int semestre) {
 		for (Materia materia : listaMaterias) {
 			if (semestre == materia.getSemestre() && dia == materia.getDia() && hora == materia.getHora()) {
@@ -186,6 +216,12 @@ public class Main extends ConsoleProgram {
 		return false;
 	}
 	
+
+	/**
+	 * @param nombre
+	 * @return
+	 * El metodo revisa en la lista de salones, si ya existe un salon con el mismo nombre del salon que se esta intentando crear
+	 */
 	public boolean verificarSalon(String nombre) {
 		for (Salon salon : listaSalones) {
 			if (nombre.equals(salon.getNombre())) {
