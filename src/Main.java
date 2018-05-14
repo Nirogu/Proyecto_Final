@@ -12,8 +12,11 @@ public class Main extends ConsoleProgram {
 	
 	//Metodo principal del programa
 	public void run() {
-		println("Este programa le permitira generar y administrar horarios estudiantiles. A continuacion, se le solicitara informacion correspondiente a las materias del programa academico.");
+		println("Este programa le permitira generar y administrar horarios estudiantiles. A continuacion, se le solicitara informacion correspondiente a los salones de clase disponibles para el uso del programa academico.");
+		inscribirSalones();
+		println("A continuacion se le pedira la informacion de las materias que desea agregar al programa academico.");
 		inscribirMaterias();
+		println(listaMaterias);
 		println("A continuacion se le pedira la informacion de los estudiantes que desea inscribir.");
 		inscribirEstudiantes();
 		while (true) {
@@ -34,6 +37,19 @@ public class Main extends ConsoleProgram {
 			crearTabla(materiasEstudiante, nombreArchivo);
 		}
 	}
+
+	private void inscribirSalones() {
+		int numSalones = readInt("Por favor digite el numero de salones: ");
+		for (int i=1 ; i<= numSalones ; i++) {
+			String nombreSalon = readLine("Digite el nombre del salon ").toUpperCase();
+			if (verificarSalon(nombreSalon)) {
+				i--;
+				continue;
+			}
+			int cupoSalon = readInt ("Digite la maxima cantidad de estudiantes que pueden tomar clase en el salon: ");
+			listaSalones.add(new Salon(nombreSalon, cupoSalon));
+		}
+	}
 	
 	/**
 	 * El metodo recibe del usuario la información de las materias existentes por cada semestre en el programa academico.
@@ -43,7 +59,7 @@ public class Main extends ConsoleProgram {
 		numeroSemestres = readInt("Ingrese el numero de semestres del programa academico: ");
 		for (int i= 1 ; i<=numeroSemestres ; i++) {
 			int numeroMaterias = readInt("Digite el numero de materias que tiene el semestre " + i + ": ");
-			for (int j= 1 ; j<= numeroMaterias ; j++) {
+			for (int j= 1 ; j <= numeroMaterias ; j++) {
 				String nombreMateria = readLine("Digite el nombre de la materia " + j + ": ").toUpperCase();
 				int diaMateria = readInt("Digite el numero del dia de la materia " + j + ": ");
 				if(diaMateria>5 || diaMateria<1) {
@@ -57,7 +73,14 @@ public class Main extends ConsoleProgram {
 					j--;
 					continue;
 				}
-				listaMaterias.add(new Materia(nombreMateria, diaMateria, horaMateria, semestreMateria));
+				int k = j;
+				for (Materia materia : listaMaterias) {
+					if (materia.getSalon() == listaSalones.get(k%listaSalones.size()) && materia.getDia() == diaMateria && materia.getHora() == horaMateria) {
+						k++;
+					}
+				}
+				Salon salonMateria = listaSalones.get(k%(listaSalones.size()-1));
+				listaMaterias.add(new Materia(nombreMateria, diaMateria, horaMateria, semestreMateria, salonMateria));
 			}
 		}
 	}
@@ -67,8 +90,8 @@ public class Main extends ConsoleProgram {
 	 * Cada estudiante es anexado al ArrayList de estudiantes totales, para su uso posterior.
 	 */
 	private void inscribirEstudiantes () {
-		int numestudiantes = readInt("Por favor digite el numero de estudiantes: ");
-		for (int i=1 ; i<= numestudiantes ; i++) {
+		int numEstudiantes = readInt("Por favor digite el numero de estudiantes: ");
+		for (int i=1 ; i<= numEstudiantes ; i++) {
 			while (true) {
 				String nombreEstudiante = readLine("Digite el nombre del estudiante  " + i + ": ").toUpperCase();
 				if (verificarEstudiante(nombreEstudiante)) continue;
@@ -81,7 +104,6 @@ public class Main extends ConsoleProgram {
 				break;
 			}
 		}
-		
 	}
 	
 	/**
@@ -124,11 +146,11 @@ public class Main extends ConsoleProgram {
 				for (Materia materia : lista) {
 					if (materia.getHora() == hora) {
 						switch (materia.getDia()) {
-						case 1: materiaLunes += materia.getNombre(); break;
-						case 2: materiaMartes += materia.getNombre(); break;
-						case 3: materiaMiercoles += materia.getNombre(); break;
-						case 4: materiaJueves += materia.getNombre(); break;
-						default: materiaViernes += materia.getNombre(); break;
+						case 1: materiaLunes += (materia.getNombre() + " (Salon: " + materia.getSalon().getNombre() + ")"); break;
+						case 2: materiaMartes += (materia.getNombre() + " (Salon: " + materia.getSalon().getNombre() + ")"); break;
+						case 3: materiaMiercoles += (materia.getNombre() + " (Salon: " + materia.getSalon().getNombre() + ")"); break;
+						case 4: materiaJueves += (materia.getNombre() + " (Salon: " + materia.getSalon().getNombre() + ")"); break;
+						default: materiaViernes += (materia.getNombre() + " (Salon: " + materia.getSalon().getNombre() + ")"); break;
 						}
 					}
 				}
@@ -164,8 +186,19 @@ public class Main extends ConsoleProgram {
 		return false;
 	}
 	
+	public boolean verificarSalon(String nombre) {
+		for (Salon salon : listaSalones) {
+			if (nombre.equals(salon.getNombre())) {
+				println("Ya existe un salon registrado con ese nombre. Por favor ingrese un nombre diferente.");
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	int numeroSemestres;
 	ArrayList<Materia> materiasEstudiante;
 	ArrayList<Materia> listaMaterias = new ArrayList<Materia>() ;
-	ArrayList<Estudiante>listaEstudiantes = new ArrayList<Estudiante>();
+	ArrayList<Estudiante> listaEstudiantes = new ArrayList<Estudiante>();
+	ArrayList<Salon> listaSalones = new ArrayList<Salon>();
 }
