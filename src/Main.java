@@ -18,6 +18,7 @@ public class Main extends ConsoleProgram {
 		inscribirMaterias();
 		println("A continuacion se le pedira la informacion de los estudiantes que desea inscribir.");
 		inscribirEstudiantes();
+		crearGrupos();
 		while (true) {
 			String estudianteSolicitado = readLine("Ingrese el nombre del estudiante del cual "
 					+ "desea obtener el horario: ").toUpperCase();
@@ -121,7 +122,6 @@ public class Main extends ConsoleProgram {
 		}
 	}
 	
-
 	/**
 	 * @param busquedaEstudiante
 	 * @param lista
@@ -182,7 +182,6 @@ public class Main extends ConsoleProgram {
 		}
 	}
 	
-
 	/**
 	 * @param nombre
 	 * @return
@@ -198,7 +197,6 @@ public class Main extends ConsoleProgram {
 		return false;
 	}
 	
-
 	/**
 	 * @param dia
 	 * @param hora
@@ -216,7 +214,6 @@ public class Main extends ConsoleProgram {
 		return false;
 	}
 	
-
 	/**
 	 * @param nombre
 	 * @return
@@ -232,7 +229,28 @@ public class Main extends ConsoleProgram {
 		return false;
 	}
 	
+	/**
+	 * El metodo crea nuevos grupos de cada materia que tenga un cupo menor a la cantidad de estudiantes del semestre.
+	 */
+	public void crearGrupos() {
+		for(int i = 0 ; i<listaMaterias.size(); i++) {
+			Materia materia = listaMaterias.get(i);
+			int cupo = materia.getSalon().getCupo();
+			int estudiantesSemestre = 0;
+			for (Estudiante estudiante : listaEstudiantes) {
+				if (estudiante.getSemestre() == materia.getSemestre()) estudiantesSemestre++;
+			}
+			if(estudiantesSemestre>cupo) {
+				Salon salonMateria = listaSalones.get(revisarSalon(i, materia.getDia(), materia.getHora())%listaSalones.size());
+				gruposExtra.add(new Materia(materia.getNombre()+2 , materia.getDia() , materia.getHora() , materia.getSemestre() , salonMateria));
+			} else {
+				continue;
+			}
+		}
+	}
+	
 	int numeroSemestres;
+	ArrayList<Materia>gruposExtra = new ArrayList<Materia>();
 	ArrayList<Materia> materiasEstudiante;
 	ArrayList<Materia> listaMaterias = new ArrayList<Materia>() ;
 	ArrayList<Estudiante> listaEstudiantes = new ArrayList<Estudiante>();
