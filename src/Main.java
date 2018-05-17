@@ -20,20 +20,31 @@ public class Main extends ConsoleProgram {
 		inscribirEstudiantes();
 		crearGrupos();
 		while (true) {
-			String estudianteSolicitado = readLine("Ingrese el nombre del estudiante del cual "
+			String nombreEstudianteSolicitado = readLine("Ingrese el nombre del estudiante del cual "
 					+ "desea obtener el horario: ").toUpperCase();
-			int semestreSolicitado = buscarEstudiante (estudianteSolicitado, listaEstudiantes) ;
-			if (semestreSolicitado == -1) {
+			Estudiante estudianteSolicitado = buscarEstudiante(nombreEstudianteSolicitado, listaEstudiantes);
+			if (estudianteSolicitado == null) {
 				println("El estudiante solicitado no se encuentra registrado en el programa.");
 				continue;
 			}
+			int semestreSolicitado = estudianteSolicitado.getSemestre();
 			materiasEstudiante = new ArrayList<Materia>();
 			for(Materia materia : listaMaterias) {
 				if (semestreSolicitado == materia.getSemestre()) {
 					materiasEstudiante.add(materia);
 				}
 			}
-			String nombreArchivo = readLine("Ingrese la ubicacion completa del directorio donde desea que se guarde el horario del estudiante: ") + estudianteSolicitado + ".csv";
+			for(Materia materia : materiasEstudiante) {
+				if (listaEstudiantes.indexOf(estudianteSolicitado) > materia.getSalon().getCupo()-1) {
+					int index;
+					for (index = 0; index<gruposExtra.size(); index++) {
+						if (gruposExtra.get(index).getHora() == materia.getHora() && gruposExtra.get(index).getDia() == materia.getDia()) break;
+					}
+					materia.setNombreMateria(gruposExtra.get(index).getNombre());
+					materia.setSalon(gruposExtra.get(index).getSalon());
+				}
+			}
+			String nombreArchivo = readLine("Ingrese la ubicacion completa del directorio donde desea que se guarde el horario del estudiante: ") + nombreEstudianteSolicitado + ".csv";
 			crearTabla(materiasEstudiante, nombreArchivo);
 		}
 	}
@@ -45,12 +56,12 @@ public class Main extends ConsoleProgram {
 	private void inscribirSalones() {
 		int numSalones = readInt("Por favor digite el numero de salones: ");
 		for (int i=1 ; i<= numSalones ; i++) {
-			String nombreSalon = readLine("Digite el nombre del salon ").toUpperCase();
+			String nombreSalon = readLine("Digite el nombre del salon " + i + ": ").toUpperCase();
 			if (verificarSalon(nombreSalon)) {
 				i--;
 				continue;
 			}
-			int cupoSalon = readInt ("Digite la maxima cantidad de estudiantes que pueden tomar clase en el salon: ");
+			int cupoSalon = readInt ("Digite la maxima cantidad de estudiantes que pueden tomar clase en el salon " + i + ": ");
 			listaSalones.add(new Salon(nombreSalon, cupoSalon));
 		}
 	}
@@ -63,15 +74,20 @@ public class Main extends ConsoleProgram {
 		numeroSemestres = readInt("Ingrese el numero de semestres del programa academico: ");
 		for (int i= 1 ; i<=numeroSemestres ; i++) {
 			int numeroMaterias = readInt("Digite el numero de materias que tiene el semestre " + i + ": ");
-			for (int j= 1 ; j <= numeroMaterias ; j++) {
-				String nombreMateria = readLine("Digite el nombre de la materia " + j + ": ").toUpperCase();
-				int diaMateria = readInt("Digite el numero del dia de la materia " + j + ": ");
+			for (int j= 0 ; j < numeroMaterias ; j++) {
+				String nombreMateria = readLine("Digite el nombre de la materia " + (j+1) + ": ").toUpperCase();
+				int diaMateria = readInt("Digite el numero del dia de la materia " + (j+1) + ": ");
 				if(diaMateria>5 || diaMateria<1) {
 					println ("Por favor digite un dia de la semana valido, teniendo en cuenta que el lunes es el dia #1.");
 					j--;
 					continue;
 				}
-				int horaMateria = readInt("Digite la hora inicial de la materia " + j + ": ");
+				int horaMateria = readInt("Digite la hora inicial de la materia " + (j+1) + ": ");
+				if (horaMateria >= 24 || horaMateria < 0) {
+					println("Por favor digite una hora del dia valida, entre 00 y 23 horas del dia");
+					j--;
+					continue;
+				}
 				int semestreMateria = i;
 				if (verificarMateria(diaMateria, horaMateria, semestreMateria)) {
 					j--;
@@ -128,13 +144,13 @@ public class Main extends ConsoleProgram {
 	 * @return
 	 * El metodo busca un estudiante por medio del nombre del mismo, y retorna el semestre en el que se encuentra
 	 */
-	public int buscarEstudiante(String busquedaEstudiante , ArrayList<Estudiante> lista) {
+	public Estudiante buscarEstudiante(String busquedaEstudiante , ArrayList<Estudiante> lista) {
 		for(Estudiante e : lista){
 			if (busquedaEstudiante.equals(e.getNombre())) {
-				return e.getSemestre() ;
+				return e;
 			}
 		}
-		return -1;
+		return null;
 	}
 	
 	/**
@@ -160,6 +176,7 @@ public class Main extends ConsoleProgram {
 				String materiaJueves = "";
 				String materiaViernes = "";
 				for (Materia materia : lista) {
+					if (materia.getDia() == 6) continue;
 					if (materia.getHora() == hora) {
 						switch (materia.getDia()) {
 						case 1: materiaLunes += (materia.getNombre() + " (Salon: " + materia.getSalon().getNombre() + ")"); break;
@@ -241,8 +258,11 @@ public class Main extends ConsoleProgram {
 				if (estudiante.getSemestre() == materia.getSemestre()) estudiantesSemestre++;
 			}
 			if(estudiantesSemestre>cupo) {
-				Salon salonMateria = listaSalones.get(revisarSalon(i, materia.getDia(), materia.getHora())%listaSalones.size());
-				gruposExtra.add(new Materia(materia.getNombre()+2 , materia.getDia() , materia.getHora() , materia.getSemestre() , salonMateria));
+				int nuevosGrupos = (int)Math.floor((double)estudiantesSemestre/cupo);
+				for (int j = 1; j<=nuevosGrupos; j++) {
+					Salon salonMateria = listaSalones.get(revisarSalon(i, materia.getDia(), materia.getHora())%listaSalones.size());
+					gruposExtra.add(new Materia(materia.getNombre()+(j+1) , materia.getDia() , materia.getHora() , materia.getSemestre() , salonMateria));
+				}
 			} else {
 				continue;
 			}
