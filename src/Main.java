@@ -8,14 +8,12 @@ import java.io.*;
  */
 public class Main extends ConsoleProgram {
 	
-	private static final long serialVersionUID = 1L;
-	
 	//Metodo principal del programa
 	public void run() {
 		println("Este programa le permitira generar y administrar horarios estudiantiles. A continuacion, se le solicitara informacion correspondiente a los salones de clase disponibles para el uso del programa academico.");
 		
 		while (true) {
-			String eleccionSalones = readLine("Escriba la direccion del archivo del cual desea obtener la informacion de los salones. Si desea ingresar los salones a mano, escriba \"NO\".");
+			String eleccionSalones = readLine("Escriba la direccion del archivo del cual desea obtener la informacion de los salones. Si desea ingresar los salones a mano, escriba \"NO\": ");
 			if (eleccionSalones.toUpperCase().equals("NO")) {
 				inscribirSalones();
 			} else {
@@ -30,7 +28,7 @@ public class Main extends ConsoleProgram {
 		
 		println("A continuacion se le pedira la informacion de las materias que desea agregar al programa academico.");
 		while (true) {
-			String eleccionMaterias = readLine("Escriba la direccion del archivo del cual desea obtener la informacion de las materias. Si desea ingresar las materias a mano, escriba \"NO\".");
+			String eleccionMaterias = readLine("Escriba la direccion del archivo del cual desea obtener la informacion de las materias. Si desea ingresar las materias a mano, escriba \"NO\": ");
 			if (eleccionMaterias.toUpperCase().equals("NO")) {
 				inscribirMaterias();
 			} else {
@@ -45,7 +43,7 @@ public class Main extends ConsoleProgram {
 		
 		println("A continuacion se le pedira la informacion de los estudiantes que desea inscribir.");
 		while (true) {
-			String eleccionEstudiantes = readLine("Escriba la direccion del archivo del cual desea obtener la informacion de los estudiantes. Si desea ingresar los estudiantes a mano, escriba \"NO\".");
+			String eleccionEstudiantes = readLine("Escriba la direccion del archivo del cual desea obtener la informacion de los estudiantes. Si desea ingresar los estudiantes a mano, escriba \"NO\": ");
 			if (eleccionEstudiantes.toUpperCase().equals("NO")) {
 				inscribirEstudiantes();
 			} else {
@@ -58,7 +56,7 @@ public class Main extends ConsoleProgram {
 			}
 		}
 		
-		crearGrupos();
+//		crearGrupos();
 		
 		while (true) {
 			String nombreSolicitado = readLine("Ingrese el nombre del estudiante del cual "
@@ -75,7 +73,7 @@ public class Main extends ConsoleProgram {
 					materiasEstudiante.add(materia);
 				}
 			}
-			for(Materia materia : materiasEstudiante) {
+			/*for(Materia materia : materiasEstudiante) {
 				if (listaEstudiantes.indexOf(estudianteSolicitado) > materia.getSalon().getCupo()-1) {
 					int index;
 					for (index = 0; index<gruposExtra.size(); index++) {
@@ -84,7 +82,7 @@ public class Main extends ConsoleProgram {
 					materia.setNombreMateria(gruposExtra.get(index).getNombre());
 					materia.setSalon(gruposExtra.get(index).getSalon());
 				}
-			}
+			}*/
 			String nombreArchivo = readLine("Ingrese la ubicacion completa del directorio donde desea que se guarde el horario del estudiante: ") + nombreSolicitado + ".csv";
 			crearTabla(materiasEstudiante, nombreArchivo);
 		}
@@ -119,7 +117,7 @@ public class Main extends ConsoleProgram {
 				String nombreMateria = readLine("Digite el nombre de la materia " + (j+1) + ": ").toUpperCase();
 				int diaMateria = readInt("Digite el numero del dia de la materia " + (j+1) + ": ");
 				if(diaMateria>5 || diaMateria<1) {
-					println ("Por favor digite un dia de la semana valido, teniendo en cuenta que el lunes es el dia #1.");
+					println ("Por favor digite un dia de la semana valido, entre lunes y viernes, teniendo en cuenta que el lunes es el dia #1.");
 					j--;
 					continue;
 				}
@@ -367,9 +365,18 @@ public class Main extends ConsoleProgram {
 					if(materia.charAt(j) == ',') break;
 					dia += materia.charAt(j);
 				}
+				if (Integer.valueOf(dia)<1 || Integer.valueOf(dia)>5) {
+					println ("Por favor ingrese un dia de la semana valido, entre lunes y viernes, teniendo en cuenta que el lunes es el dia #1.");
+					println("No se ha podido guardar la materia " + nombre + ".");
+					continue;
+				}
 				for (k = j+1; k<materia.length(); k++) {
 					if(materia.charAt(k) == ',') break;
 					hora += materia.charAt(k);
+				}
+				if (Integer.valueOf(hora)<0 || Integer.valueOf(hora)>23) {
+					println("Por favor digite una hora del dia valida, entre 00 y 23 horas del dia");
+					println("No se ha podido guardar la materia " + nombre + ".");
 				}
 				for (int l = k+1; l<materia.length(); l++) {
 					semestre += materia.charAt(l);
@@ -427,4 +434,5 @@ public class Main extends ConsoleProgram {
 	ArrayList<Materia> listaMaterias = new ArrayList<Materia>() ;
 	ArrayList<Estudiante> listaEstudiantes = new ArrayList<Estudiante>();
 	ArrayList<Salon> listaSalones = new ArrayList<Salon>();
+	private static final long serialVersionUID = 1L;
 }
