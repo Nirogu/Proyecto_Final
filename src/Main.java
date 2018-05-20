@@ -49,7 +49,7 @@ public class Main extends ConsoleProgram {
 			if (eleccionEstudiantes.toUpperCase().equals("NO")) {
 				inscribirEstudiantes();
 			} else {
-				
+				leerEstudiantes(eleccionEstudiantes);
 			}
 			if (listaEstudiantes.size() > 0) {
 				break;
@@ -327,7 +327,10 @@ public class Main extends ConsoleProgram {
 					if(salon.charAt(i) == ',') break;
 					nombre += salon.charAt(i);
 				}
-				if (verificarSalon(nombre.toUpperCase())) continue;
+				if (verificarSalon(nombre.toUpperCase())) {
+					println("Solo se ha guardado un salon con el nombre " + nombre + ".");
+					continue;
+				}
 				for (int j = i+1; j<salon.length(); j++) {
 					cupo += salon.charAt(j);
 				}
@@ -371,7 +374,9 @@ public class Main extends ConsoleProgram {
 				for (int l = k+1; l<materia.length(); l++) {
 					semestre += materia.charAt(l);
 				}
+				if(Integer.valueOf(semestre) > numeroSemestres) numeroSemestres = Integer.valueOf(semestre);
 				if (verificarMateria(Integer.valueOf(dia), Integer.valueOf(hora), Integer.valueOf(semestre))) {
+					println("No se ha guardado la materia " + nombre + ", ya que ya existe una materia dictada en ese momento");
 					continue;
 				}
 				Salon salonMateria = listaSalones.get(revisarSalon(j, Integer.valueOf(dia), Integer.valueOf(hora))%listaSalones.size());
@@ -400,7 +405,10 @@ public class Main extends ConsoleProgram {
 					if(estudiante.charAt(i) == ',') break;
 					nombre += estudiante.charAt(i);
 				}
-				if (verificarEstudiante(nombre.toUpperCase())) continue;
+				if (verificarEstudiante(nombre.toUpperCase())) {
+					println("Solo se ha guardado un estudiante con el nombre " + nombre + ".");
+					continue;
+				}
 				for (int j = i+1; j<estudiante.length(); j++) {
 					semestre += estudiante.charAt(j);
 				}
@@ -413,7 +421,7 @@ public class Main extends ConsoleProgram {
 	}
 	
 	//Variables de clase
-	int numeroSemestres;
+	int numeroSemestres = 0;
 	ArrayList<Materia>gruposExtra = new ArrayList<Materia>();
 	ArrayList<Materia> materiasEstudiante;
 	ArrayList<Materia> listaMaterias = new ArrayList<Materia>() ;
