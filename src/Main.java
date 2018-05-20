@@ -13,16 +13,57 @@ public class Main extends ConsoleProgram {
 	//Metodo principal del programa
 	public void run() {
 		println("Este programa le permitira generar y administrar horarios estudiantiles. A continuacion, se le solicitara informacion correspondiente a los salones de clase disponibles para el uso del programa academico.");
-		inscribirSalones();
-		println("A continuacion se le pedira la informacion de las materias que desea agregar al programa academico.");
-		inscribirMaterias();
-		println("A continuacion se le pedira la informacion de los estudiantes que desea inscribir.");
-		inscribirEstudiantes();
-		crearGrupos();
+		
 		while (true) {
-			String nombreEstudianteSolicitado = readLine("Ingrese el nombre del estudiante del cual "
+			String eleccionSalones = readLine("Escriba la direccion del archivo del cual desea obtener la informacion de los salones. Si desea ingresar los salones a mano, escriba \"NO\".");
+			if (eleccionSalones.toUpperCase().equals("NO")) {
+				inscribirSalones();
+			} else {
+				leerSalones(eleccionSalones);
+			}
+			if (listaSalones.size() > 0) {
+				break;
+			} else {
+				println("Por favor ingrese la informacion de los salones disponibles para el programa academico");
+			}
+		}
+		
+		println("A continuacion se le pedira la informacion de las materias que desea agregar al programa academico.");
+		while (true) {
+			String eleccionMaterias = readLine("Escriba la direccion del archivo del cual desea obtener la informacion de las materias. Si desea ingresar las materias a mano, escriba \"NO\".");
+			if (eleccionMaterias.toUpperCase().equals("NO")) {
+				inscribirMaterias();
+			} else {
+				leerMaterias(eleccionMaterias);
+			}
+			if(listaMaterias.size() > 0) {
+				break;
+			} else {
+				println("Por favor ingrese la informacion de las materias disponibles para el programa academico");
+			}
+		}
+		
+		println("A continuacion se le pedira la informacion de los estudiantes que desea inscribir.");
+		while (true) {
+			String eleccionEstudiantes = readLine("Escriba la direccion del archivo del cual desea obtener la informacion de los estudiantes. Si desea ingresar los estudiantes a mano, escriba \"NO\".");
+			if (eleccionEstudiantes.toUpperCase().equals("NO")) {
+				inscribirEstudiantes();
+			} else {
+				
+			}
+			if (listaEstudiantes.size() > 0) {
+				break;
+			} else {
+				println("Por favor ingrese la informacion de los estudiantes inscritos en el programa academico");
+			}
+		}
+		
+		crearGrupos();
+		
+		while (true) {
+			String nombreSolicitado = readLine("Ingrese el nombre del estudiante del cual "
 					+ "desea obtener el horario: ").toUpperCase();
-			Estudiante estudianteSolicitado = buscarEstudiante(nombreEstudianteSolicitado, listaEstudiantes);
+			Estudiante estudianteSolicitado = buscarEstudiante(nombreSolicitado, listaEstudiantes);
 			if (estudianteSolicitado == null) {
 				println("El estudiante solicitado no se encuentra registrado en el programa.");
 				continue;
@@ -44,7 +85,7 @@ public class Main extends ConsoleProgram {
 					materia.setSalon(gruposExtra.get(index).getSalon());
 				}
 			}
-			String nombreArchivo = readLine("Ingrese la ubicacion completa del directorio donde desea que se guarde el horario del estudiante: ") + nombreEstudianteSolicitado + ".csv";
+			String nombreArchivo = readLine("Ingrese la ubicacion completa del directorio donde desea que se guarde el horario del estudiante: ") + nombreSolicitado + ".csv";
 			crearTabla(materiasEstudiante, nombreArchivo);
 		}
 	}
@@ -269,6 +310,109 @@ public class Main extends ConsoleProgram {
 		}
 	}
 	
+	/**
+	 * @param archivo
+	 * El metodo crea la lista de salones con la informacion obtenida del archivo especificado por el usuario.
+	 */
+	public void leerSalones(String archivo) {
+		try {
+			BufferedReader leer = new BufferedReader(new FileReader(archivo));
+			while (true) {
+				String salon = leer.readLine();
+				if (salon == null) break;
+				String nombre = "";
+				String cupo = "";
+				int i;
+				for (i = 0; i<salon.length(); i++) {
+					if(salon.charAt(i) == ',') break;
+					nombre += salon.charAt(i);
+				}
+				if (verificarSalon(nombre.toUpperCase())) continue;
+				for (int j = i+1; j<salon.length(); j++) {
+					cupo += salon.charAt(j);
+				}
+				listaSalones.add(new Salon(nombre.toUpperCase(), Integer.valueOf(cupo)));
+			}
+			leer.close();
+		} catch (IOException e) {
+			println("No se ha encontrado el archivo solicitado. Por favor ingrese una ruta valida, o escriba \"NO\" para ingresar los salones a mano");
+		}
+	}
+	
+	/**
+	 * @param archivo
+	 * El mateodo crea la lista de materias con la informacion obtenida del archivo especificado por el usuario.
+	 */
+	public void leerMaterias(String archivo) {
+		try {
+			BufferedReader leer = new BufferedReader(new FileReader(archivo));
+			while (true) {
+				String materia = leer.readLine();
+				if (materia == null) break;
+				String nombre = "";
+				String dia = "";
+				String hora = "";
+				String semestre = "";
+				int i;
+				int j;
+				int k;
+				for (i = 0; i<materia.length(); i++) {
+					if(materia.charAt(i) == ',') break;
+					nombre += materia.charAt(i);
+				}
+				for (j = i+1; j<materia.length(); j++) {
+					if(materia.charAt(j) == ',') break;
+					dia += materia.charAt(j);
+				}
+				for (k = j+1; k<materia.length(); k++) {
+					if(materia.charAt(k) == ',') break;
+					hora += materia.charAt(k);
+				}
+				for (int l = k+1; l<materia.length(); l++) {
+					semestre += materia.charAt(l);
+				}
+				if (verificarMateria(Integer.valueOf(dia), Integer.valueOf(hora), Integer.valueOf(semestre))) {
+					continue;
+				}
+				Salon salonMateria = listaSalones.get(revisarSalon(j, Integer.valueOf(dia), Integer.valueOf(hora))%listaSalones.size());
+				listaMaterias.add(new Materia(nombre.toUpperCase(), Integer.valueOf(dia), Integer.valueOf(hora), Integer.valueOf(semestre), salonMateria));
+			}
+			leer.close();
+		} catch (IOException e) {
+			println("No se ha encontrado el archivo solicitado. Por favor ingrese una ruta valida, o escriba \"NO\" para ingresar las materias a mano");
+		}
+	}
+	
+	/**
+	 * @param archivo
+	 * El metodo crea la lista de estudiantes con la informacion obtenida del archivo especificado por el usuario.
+	 */
+	public void leerEstudiantes(String archivo) {
+		try {
+			BufferedReader leer = new BufferedReader(new FileReader(archivo));
+			while (true) {
+				String estudiante = leer.readLine();
+				if (estudiante == null) break;
+				String nombre = "";
+				String semestre = "";
+				int i;
+				for (i = 0; i<estudiante.length(); i++) {
+					if(estudiante.charAt(i) == ',') break;
+					nombre += estudiante.charAt(i);
+				}
+				if (verificarEstudiante(nombre.toUpperCase())) continue;
+				for (int j = i+1; j<estudiante.length(); j++) {
+					semestre += estudiante.charAt(j);
+				}
+				listaEstudiantes.add(new Estudiante(nombre.toUpperCase(), Integer.valueOf(semestre)));
+			}
+			leer.close();
+		} catch (IOException e) {
+			println("No se ha encontrado el archivo solicitado. Por favor ingrese una ruta valida, o escriba \"NO\" para ingresar los estudiantes a mano");
+		}
+	}
+	
+	//Variables de clase
 	int numeroSemestres;
 	ArrayList<Materia>gruposExtra = new ArrayList<Materia>();
 	ArrayList<Materia> materiasEstudiante;
