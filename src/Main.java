@@ -25,6 +25,21 @@ public class Main extends ConsoleProgram {
 				println("Por favor ingrese la informacion de los salones disponibles para el programa academico");
 			}
 		}
+
+		println("A continuacion se le pedira la informacion de los profesores que desea inscribir que desea inscribir.");
+		while (true) {
+			String eleccionProfesores = readLine("Escriba la direccion del archivo del cual desea obtener la informacion de los profesores. Si desea ingresar los profesores a mano, escriba \"NO\": ");
+			if (eleccionProfesores.toUpperCase().equals("NO")) {
+				inscribirProfesores();
+			} else {
+				leerProfesores(eleccionProfesores);
+			}
+			if (listaEstudiantes.size() > 0) {
+				break;
+			} else {
+				println("Por favor ingrese la informacion de los profesores disponibles en el programa academico");
+			}
+		}
 		
 		println("A continuacion se le pedira la informacion de las materias que desea agregar al programa academico.");
 		while (true) {
@@ -55,8 +70,6 @@ public class Main extends ConsoleProgram {
 				println("Por favor ingrese la informacion de los estudiantes inscritos en el programa academico");
 			}
 		}
-		
-//		crearGrupos();
 		
 		while (true) {
 			String nombreSolicitado = readLine("Ingrese el nombre del estudiante del cual "
@@ -132,8 +145,9 @@ public class Main extends ConsoleProgram {
 					j--;
 					continue;
 				}
+				String profesorMateria = listaProfesores.get(revisarProfesor(j, diaMateria, horaMateria)%listaProfesores.size());
 				Salon salonMateria = listaSalones.get(revisarSalon(j, diaMateria, horaMateria)%listaSalones.size());
-				listaMaterias.add(new Materia(nombreMateria, diaMateria, horaMateria, semestreMateria, salonMateria));
+				listaMaterias.add(new Materia(nombreMateria, diaMateria, horaMateria, semestreMateria, profesorMateria, salonMateria));
 			}
 		}
 	}
@@ -157,6 +171,24 @@ public class Main extends ConsoleProgram {
 	}
 	
 	/**
+	 * @param j
+	 * @param dia
+	 * @param hora
+	 * @return
+	 * El metodo verifica que no exista una materia usando el salon dado, a la misma hora y dia que la materia que se esta intentando inscribir.
+	 */
+	public int revisarProfesor(int j, int dia, int hora) {
+		for (int i = 0; i<listaMaterias.size(); i++) {
+			Materia materia = listaMaterias.get(i);
+			if (materia.getProfesor() == listaProfesores.get(j%listaProfesores.size()) && materia.getDia() == dia && materia.getHora() == hora) {
+				j++;
+				i = -1;
+			}
+		}
+		return j;
+	}
+	
+	/**
 	 * El metodo recibre del usuario la informacion de los estudiantes inscritos en el programa academico.
 	 * Cada estudiante es anexado al ArrayList de estudiantes totales, para su uso posterior.
 	 */
@@ -172,6 +204,22 @@ public class Main extends ConsoleProgram {
 					continue;
 				}
 				listaEstudiantes.add(new Estudiante(nombreEstudiante, semestreEstudiante));
+				break;
+			}
+		}
+	}
+	
+	/**
+	 * El metodo recibre del usuario la informacion de los profesores disponibles el programa academico.
+	 * Cada estudiante es anexado al ArrayList de estudiantes totales, para su uso posterior.
+	 */
+	private void inscribirProfesores() {
+		int numProfesores = readInt("Por favor digite el numero de profesores: ");
+		for (int i=1 ; i<= numProfesores ; i++) {
+			while (true) {
+				String nombreProfesor = readLine("Digite el nombre del profesor " + i + ": ").toUpperCase();
+				if (verificarProfesor(nombreProfesor)) continue;
+				listaProfesores.add(nombreProfesor);
 				break;
 			}
 		}
@@ -218,11 +266,11 @@ public class Main extends ConsoleProgram {
 					if (materia.getDia() == 6) continue;
 					if (materia.getHora() == hora) {
 						switch (materia.getDia()) {
-						case 1: materiaLunes += (materia.getNombre() + " (Salon: " + materia.getSalon().getNombre() + ")"); break;
-						case 2: materiaMartes += (materia.getNombre() + " (Salon: " + materia.getSalon().getNombre() + ")"); break;
-						case 3: materiaMiercoles += (materia.getNombre() + " (Salon: " + materia.getSalon().getNombre() + ")"); break;
-						case 4: materiaJueves += (materia.getNombre() + " (Salon: " + materia.getSalon().getNombre() + ")"); break;
-						default: materiaViernes += (materia.getNombre() + " (Salon: " + materia.getSalon().getNombre() + ")"); break;
+						case 1: materiaLunes += (materia.getNombre() + " (Salon: " + materia.getSalon().getNombre() + ", Profesor: " + materia.getProfesor() + ")"); break;
+						case 2: materiaMartes += (materia.getNombre() + " (Salon: " + materia.getSalon().getNombre() + ", Profesor: " + materia.getProfesor() + ")"); break;
+						case 3: materiaMiercoles += (materia.getNombre() + " (Salon: " + materia.getSalon().getNombre() + ", Profesor: " + materia.getProfesor() + ")"); break;
+						case 4: materiaJueves += (materia.getNombre() + " (Salon: " + materia.getSalon().getNombre() + ", Profesor: " + materia.getProfesor() + ")"); break;
+						default: materiaViernes += (materia.getNombre() + " (Salon: " + materia.getSalon().getNombre() + ", Profesor: " + materia.getProfesor() + ")"); break;
 						}
 					}
 				}
@@ -286,26 +334,18 @@ public class Main extends ConsoleProgram {
 	}
 	
 	/**
-	 * El metodo crea nuevos grupos de cada materia que tenga un cupo menor a la cantidad de estudiantes del semestre.
+	 * @param nombre
+	 * @return
+	 * El metodo revisa en la lista de profesores, si ya existe un profesor con el mismo nombre del profesor que se esta intentando crear
 	 */
-	public void crearGrupos() {
-		for(int i = 0 ; i<listaMaterias.size(); i++) {
-			Materia materia = listaMaterias.get(i);
-			int cupo = materia.getSalon().getCupo();
-			int estudiantesSemestre = 0;
-			for (Estudiante estudiante : listaEstudiantes) {
-				if (estudiante.getSemestre() == materia.getSemestre()) estudiantesSemestre++;
-			}
-			if(estudiantesSemestre>cupo) {
-				int nuevosGrupos = (int)Math.floor((double)estudiantesSemestre/cupo);
-				for (int j = 1; j<=nuevosGrupos; j++) {
-					Salon salonMateria = listaSalones.get(revisarSalon(i, materia.getDia(), materia.getHora())%listaSalones.size());
-					gruposExtra.add(new Materia(materia.getNombre()+(j+1) , materia.getDia() , materia.getHora() , materia.getSemestre() , salonMateria));
-				}
-			} else {
-				continue;
+	public boolean verificarProfesor(String nombre) {
+		for(String profesor : listaProfesores) {
+			if(profesor.equals(nombre)) {
+				println("Ya existe un profesor registrado con ese nombre. Por favor ingrese un nombre diferente.");
+				return true;
 			}
 		}
+		return false;
 	}
 	
 	/**
@@ -347,6 +387,7 @@ public class Main extends ConsoleProgram {
 	public void leerMaterias(String archivo) {
 		try {
 			BufferedReader leer = new BufferedReader(new FileReader(archivo));
+			int a = -1;
 			while (true) {
 				String materia = leer.readLine();
 				if (materia == null) break;
@@ -386,8 +427,10 @@ public class Main extends ConsoleProgram {
 					println("No se ha guardado la materia " + nombre + ", ya que ya existe una materia dictada en ese momento");
 					continue;
 				}
-				Salon salonMateria = listaSalones.get(revisarSalon(j, Integer.valueOf(dia), Integer.valueOf(hora))%listaSalones.size());
-				listaMaterias.add(new Materia(nombre.toUpperCase(), Integer.valueOf(dia), Integer.valueOf(hora), Integer.valueOf(semestre), salonMateria));
+				a++;
+				String profesorMateria = listaProfesores.get(revisarProfesor(a, Integer.valueOf(dia), Integer.valueOf(hora))%listaProfesores.size());
+				Salon salonMateria = listaSalones.get(revisarSalon(a, Integer.valueOf(dia), Integer.valueOf(hora))%listaSalones.size());
+				listaMaterias.add(new Materia(nombre.toUpperCase(), Integer.valueOf(dia), Integer.valueOf(hora), Integer.valueOf(semestre), profesorMateria, salonMateria));
 			}
 			leer.close();
 		} catch (IOException e) {
@@ -427,12 +470,30 @@ public class Main extends ConsoleProgram {
 		}
 	}
 	
+	/**
+	 * @param archivo
+	 * El metodo crea la lista de profesores con la informacion obtenida del archivo especificado por el usuario.
+	 */
+	public void leerProfesores(String archivo) {
+		try {
+			BufferedReader leer = new BufferedReader(new FileReader(archivo));
+			while (true) {
+				String profesor = leer.readLine();
+				if (profesor == null) break;
+				listaProfesores.add(profesor);
+			}
+			leer.close();
+		} catch (IOException e) {
+			println("No se ha encontrado el archivo solicitado. Por favor ingrese una ruta valida, o escriba \"NO\" para ingresar los estudiantes a mano");
+		}
+	}
+	
 	//Variables de clase
 	int numeroSemestres = 0;
-	ArrayList<Materia>gruposExtra = new ArrayList<Materia>();
 	ArrayList<Materia> materiasEstudiante;
 	ArrayList<Materia> listaMaterias = new ArrayList<Materia>() ;
 	ArrayList<Estudiante> listaEstudiantes = new ArrayList<Estudiante>();
 	ArrayList<Salon> listaSalones = new ArrayList<Salon>();
+	ArrayList<String> listaProfesores = new ArrayList<String>();
 	private static final long serialVersionUID = 1L;
 }

@@ -36,6 +36,14 @@ public class Materia {
 	public void setSemestre(int semestre) {
 		this.semestre = semestre;
 	}
+
+	/**
+	 * @param profesor
+	 * Metodo setter para la variable semestre
+	 */
+	public void setProfesor(String profesor) {
+		this.profesor = profesor;
+	}
 	
 	/**
 	 * @param salon
@@ -71,10 +79,18 @@ public class Materia {
 	
 	/**
 	 * @return
-	 * Metodo getter para la variable hora
+	 * Metodo getter para la variable semestre
 	 */
 	public int getSemestre(){
 		return semestre;
+	}
+
+	/**
+	 * @return
+	 * Metodo getter para la variable profesor
+	 */
+	public String getProfesor(){
+		return profesor;
 	}
 	
 	/**
@@ -93,17 +109,18 @@ public class Materia {
 	 * @param salon
 	 * Metodo constructor para la clase Materia
 	 */
-	public Materia (String nombre, int dia , int hora , int semestre, Salon salon) {
+	public Materia (String nombre, int dia , int hora , int semestre, String profesor, Salon salon) {
 		this.nombre = nombre;
 		this.dia = dia;
 		this.hora = hora;
 		this.semestre = semestre;
+		this.profesor = profesor;
 		this.salon = salon;
 	}
 	
 	//Metodo toString de la clase Materia
 	public String toString() {
-		return (nombre + ": Dia " + dia + ": Hora "+ hora + ": Semestre "+ semestre + ": Salon " + salon.getNombre());
+		return (nombre + ": Dia " + dia + ": Hora "+ hora + ": Semestre "+ semestre + ": Profesor " + profesor + ": Salon " + salon.getNombre());
 	}
 	
 	//Variables de la clase
@@ -111,5 +128,6 @@ public class Materia {
 	private int hora;
 	private int dia;
 	private int semestre;
+	private String profesor;
 	private Salon salon;
 }
