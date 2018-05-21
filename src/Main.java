@@ -266,11 +266,11 @@ public class Main extends ConsoleProgram {
 					if (materia.getDia() == 6) continue;
 					if (materia.getHora() == hora) {
 						switch (materia.getDia()) {
-						case 1: materiaLunes += (materia.getNombre() + " (Salon: " + materia.getSalon().getNombre() + ", Profesor: " + materia.getProfesor() + ")"); break;
-						case 2: materiaMartes += (materia.getNombre() + " (Salon: " + materia.getSalon().getNombre() + ", Profesor: " + materia.getProfesor() + ")"); break;
-						case 3: materiaMiercoles += (materia.getNombre() + " (Salon: " + materia.getSalon().getNombre() + ", Profesor: " + materia.getProfesor() + ")"); break;
-						case 4: materiaJueves += (materia.getNombre() + " (Salon: " + materia.getSalon().getNombre() + ", Profesor: " + materia.getProfesor() + ")"); break;
-						default: materiaViernes += (materia.getNombre() + " (Salon: " + materia.getSalon().getNombre() + ", Profesor: " + materia.getProfesor() + ")"); break;
+						case 1: materiaLunes += (materia.getNombre() + " (Salon: " + materia.getSalon().getNombre() + " - Profesor: " + materia.getProfesor() + ")"); break;
+						case 2: materiaMartes += (materia.getNombre() + " (Salon: " + materia.getSalon().getNombre() + " - Profesor: " + materia.getProfesor() + ")"); break;
+						case 3: materiaMiercoles += (materia.getNombre() + " (Salon: " + materia.getSalon().getNombre() + " - Profesor: " + materia.getProfesor() + ")"); break;
+						case 4: materiaJueves += (materia.getNombre() + " (Salon: " + materia.getSalon().getNombre() + " - Profesor: " + materia.getProfesor() + ")"); break;
+						default: materiaViernes += (materia.getNombre() + " (Salon: " + materia.getSalon().getNombre() + " - Profesor: " + materia.getProfesor() + ")"); break;
 						}
 					}
 				}
