@@ -3,8 +3,8 @@ import java.util.*;
 import java.io.*;
 
 /**
- * @author LosCapos
  * Clase principal del programa. Permite la interaccion entre el usuario y todos los componentes del programa.
+ * @author LosCapos
  */
 public class Main extends ConsoleProgram {
 	
@@ -26,7 +26,7 @@ public class Main extends ConsoleProgram {
 			}
 		}
 
-		println("A continuacion se le pedira la informacion de los profesores que desea inscribir que desea inscribir.");
+		println("A continuacion se le pedira la informacion de los profesores que desea inscribir.");
 		while (true) {
 			String eleccionProfesores = readLine("Escriba la direccion del archivo del cual desea obtener la informacion de los profesores. Si desea ingresar los profesores a mano, escriba \"NO\": ");
 			if (eleccionProfesores.toUpperCase().equals("NO")) {
@@ -86,23 +86,14 @@ public class Main extends ConsoleProgram {
 					materiasEstudiante.add(materia);
 				}
 			}
-			/*for(Materia materia : materiasEstudiante) {
-				if (listaEstudiantes.indexOf(estudianteSolicitado) > materia.getSalon().getCupo()-1) {
-					int index;
-					for (index = 0; index<gruposExtra.size(); index++) {
-						if (gruposExtra.get(index).getHora() == materia.getHora() && gruposExtra.get(index).getDia() == materia.getDia()) break;
-					}
-					materia.setNombreMateria(gruposExtra.get(index).getNombre());
-					materia.setSalon(gruposExtra.get(index).getSalon());
-				}
-			}*/
+			
 			String nombreArchivo = readLine("Ingrese la ubicacion completa del directorio donde desea que se guarde el horario del estudiante: ") + nombreSolicitado + ".csv";
 			crearTabla(materiasEstudiante, nombreArchivo);
 		}
 	}
 
 	/**
-	 * El metodo recibe del usuario la información de los salones existentes en el programa academico.
+	 * El metodo recibe del usuario la informacion de los salones existentes en el programa academico.
 	 * Cada salon es anexada al ArrayList de salones, para su uso posterior.
 	 */
 	private void inscribirSalones() {
@@ -119,7 +110,7 @@ public class Main extends ConsoleProgram {
 	}
 	
 	/**
-	 * El metodo recibe del usuario la información de las materias existentes por cada semestre en el programa academico.
+	 * El metodo recibe del usuario la informacion de las materias existentes por cada semestre en el programa academico.
 	 * Cada materia es anexada al ArrayList de materias totales, para su uso posterior.
 	 */
 	private void inscribirMaterias() {
@@ -153,11 +144,15 @@ public class Main extends ConsoleProgram {
 	}
 	
 	/**
-	 * @param j
-	 * @param dia
-	 * @param hora
-	 * @return
 	 * El metodo verifica que no exista una materia usando el salon dado, a la misma hora y dia que la materia que se esta intentando inscribir.
+	 * @param j
+	 * Ubicacion inicial en la lista de salones. Generado automaticamente
+	 * @param dia
+	 * Dia de la materia
+	 * @param hora
+	 * Hora de la materia
+	 * @return
+	 * Ubicacion del salon disponible, en la lista de salones
 	 */
 	public int revisarSalon(int j, int dia, int hora) {
 		for (int i = 0; i<listaMaterias.size(); i++) {
@@ -171,11 +166,15 @@ public class Main extends ConsoleProgram {
 	}
 	
 	/**
-	 * @param j
-	 * @param dia
-	 * @param hora
-	 * @return
 	 * El metodo verifica que no exista una materia usando el salon dado, a la misma hora y dia que la materia que se esta intentando inscribir.
+	 * @param j
+	 * Ubicacion inicial en la lista de profesores. Generado automaticamente
+	 * @param dia
+	 * Dia de la materia
+	 * @param hora
+	 * Hora de la materia
+	 * @return
+	 * Ubicacion del profesor disponible, en la lista de profesores
 	 */
 	public int revisarProfesor(int j, int dia, int hora) {
 		for (int i = 0; i<listaMaterias.size(); i++) {
@@ -226,10 +225,13 @@ public class Main extends ConsoleProgram {
 	}
 	
 	/**
+	 * El metodo busca un estudiante por medio del nombre del mismo.
 	 * @param busquedaEstudiante
+	 * Nombre del estudiante solicitado
 	 * @param lista
+	 * Lista de estudiantes
 	 * @return
-	 * El metodo busca un estudiante por medio del nombre del mismo, y retorna el semestre en el que se encuentra
+	 * Estudiante solicitado
 	 */
 	public Estudiante buscarEstudiante(String busquedaEstudiante , ArrayList<Estudiante> lista) {
 		for(Estudiante e : lista){
@@ -241,9 +243,11 @@ public class Main extends ConsoleProgram {
 	}
 	
 	/**
-	 * @param lista
-	 * @param directorio
 	 * El metodo escribe un archivo csv con el horario completo del estudiante que el usuario haya solicitado
+	 * @param lista
+	 * Lista de las materias del estudiante solicitado
+	 * @param directorio
+	 * Ubicacion final del archivo
 	 */
 	public void crearTabla (ArrayList<Materia> lista, String directorio) {
 		try {
@@ -287,9 +291,11 @@ public class Main extends ConsoleProgram {
 	}
 	
 	/**
+	 * El metodo revisa en la lista de estudiantes, si ya existe un estudiante con el mismo nombre del estudiante que se esta intentando crear.
 	 * @param nombre
+	 * Nombre del estudiante en creacion.
 	 * @return
-	 * El metodo revisa en la lista de estudiantes, si ya existe un estudiante con el mismo nombre del estudiante que se esta intentando crear
+	 * True si ya existe un estudiante con el mismo nombre, y false en caso contrario.
 	 */
 	public boolean verificarEstudiante(String nombre) {
 		for (Estudiante estudiante : listaEstudiantes) {
@@ -302,11 +308,15 @@ public class Main extends ConsoleProgram {
 	}
 	
 	/**
-	 * @param dia
-	 * @param hora
-	 * @param semestre
-	 * @return
 	 * El metodo revisa en la lista de materias, si ya existe una materia con el mismo horario y semestre de la materia que se esta intentando crear
+	 * @param dia
+	 * Dia de la materia en creacion
+	 * @param hora
+	 * Hora de la materia en creacion
+	 * @param semestre
+	 * Semestre de la materia en creacion
+	 * @return
+	 * True si la materia no puede crearse en esa franja horaria, y false en caso contrario
 	 */
 	public boolean verificarMateria(int dia, int hora, int semestre) {
 		for (Materia materia : listaMaterias) {
@@ -319,9 +329,11 @@ public class Main extends ConsoleProgram {
 	}
 	
 	/**
-	 * @param nombre
-	 * @return
 	 * El metodo revisa en la lista de salones, si ya existe un salon con el mismo nombre del salon que se esta intentando crear
+	 * @param nombre
+	 * Nombre del salon en creacion
+	 * @return
+	 * True si ya existe un salon con el mismo nombre, y false en caso contrario
 	 */
 	public boolean verificarSalon(String nombre) {
 		for (Salon salon : listaSalones) {
@@ -334,9 +346,11 @@ public class Main extends ConsoleProgram {
 	}
 	
 	/**
-	 * @param nombre
-	 * @return
 	 * El metodo revisa en la lista de profesores, si ya existe un profesor con el mismo nombre del profesor que se esta intentando crear
+	 * @param nombre
+	 * Nombre del profesor en creacion
+	 * @return
+	 * True si ya existe un profesor con el mismo nombre, y false en caso contrario
 	 */
 	public boolean verificarProfesor(String nombre) {
 		for(String profesor : listaProfesores) {
@@ -349,8 +363,9 @@ public class Main extends ConsoleProgram {
 	}
 	
 	/**
-	 * @param archivo
 	 * El metodo crea la lista de salones con la informacion obtenida del archivo especificado por el usuario.
+	 * @param archivo
+	 * Archivo con la informacion de los salones
 	 */
 	public void leerSalones(String archivo) {
 		try {
@@ -381,8 +396,9 @@ public class Main extends ConsoleProgram {
 	}
 	
 	/**
+	 * El metodo crea la lista de materias con la informacion obtenida del archivo especificado por el usuario.
 	 * @param archivo
-	 * El mateodo crea la lista de materias con la informacion obtenida del archivo especificado por el usuario.
+	 * Archivo con la informacion de las materias
 	 */
 	public void leerMaterias(String archivo) {
 		try {
@@ -439,8 +455,9 @@ public class Main extends ConsoleProgram {
 	}
 	
 	/**
-	 * @param archivo
 	 * El metodo crea la lista de estudiantes con la informacion obtenida del archivo especificado por el usuario.
+	 * @param archivo
+	 * Archivo con la informacion de los estudiantes
 	 */
 	public void leerEstudiantes(String archivo) {
 		try {
@@ -471,8 +488,9 @@ public class Main extends ConsoleProgram {
 	}
 	
 	/**
-	 * @param archivo
 	 * El metodo crea la lista de profesores con la informacion obtenida del archivo especificado por el usuario.
+	 * @param archivo
+	 * Archivo con la informacion de los profesores
 	 */
 	public void leerProfesores(String archivo) {
 		try {
