@@ -34,7 +34,7 @@ public class Main extends ConsoleProgram {
 			} else {
 				leerProfesores(eleccionProfesores);
 			}
-			if (listaEstudiantes.size() > 0) {
+			if (listaProfesores.size() > 0) {
 				break;
 			} else {
 				println("Por favor ingrese la informacion de los profesores disponibles en el programa academico");
@@ -102,7 +102,7 @@ public class Main extends ConsoleProgram {
 	}
 
 	/**
-	 * El metodo recibe del usuario la información de los salones existentes en el programa academico.
+	 * El metodo recibe del usuario la informaciÃ³n de los salones existentes en el programa academico.
 	 * Cada salon es anexada al ArrayList de salones, para su uso posterior.
 	 */
 	private void inscribirSalones() {
@@ -119,7 +119,7 @@ public class Main extends ConsoleProgram {
 	}
 	
 	/**
-	 * El metodo recibe del usuario la información de las materias existentes por cada semestre en el programa academico.
+	 * El metodo recibe del usuario la informaciÃ³n de las materias existentes por cada semestre en el programa academico.
 	 * Cada materia es anexada al ArrayList de materias totales, para su uso posterior.
 	 */
 	private void inscribirMaterias() {
