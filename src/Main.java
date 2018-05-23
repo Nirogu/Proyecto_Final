@@ -25,7 +25,12 @@ public class Main extends ConsoleProgram {
 				println("Por favor ingrese la informacion de los salones disponibles para el programa academico");
 			}
 		}
-
+		
+		limiteEstudiantes = listaSalones.get(0).getCupo();
+		for (Salon salon : listaSalones) {
+			if(salon.getCupo() < limiteEstudiantes) limiteEstudiantes = salon.getCupo();
+		}
+		
 		println("A continuacion se le pedira la informacion de los profesores que desea inscribir.");
 		while (true) {
 			String eleccionProfesores = readLine("Escriba la direccion del archivo del cual desea obtener la informacion de los profesores. Si desea ingresar los profesores a mano, escriba \"NO\": ");
@@ -192,6 +197,10 @@ public class Main extends ConsoleProgram {
 	 * Cada estudiante es anexado al ArrayList de estudiantes totales, para su uso posterior.
 	 */
 	private void inscribirEstudiantes () {
+		int[] estudiantesSemestre = new int[numeroSemestres];
+		for (int i = 0; i<numeroSemestres; i++) {
+			estudiantesSemestre[i] = 0;
+		}
 		int numEstudiantes = readInt("Por favor digite el numero de estudiantes: ");
 		for (int i=1 ; i<= numEstudiantes ; i++) {
 			while (true) {
@@ -200,6 +209,11 @@ public class Main extends ConsoleProgram {
 				int semestreEstudiante = readInt ("Digite el semestre en el que el estudiante " + i + " se encuentra: ");
 				if (semestreEstudiante > numeroSemestres) {
 					println ("Semestre no valido. Por favor inscriba al estudiante en uno de los semestres existentes en la carrera.");
+					continue;
+				}
+				estudiantesSemestre[semestreEstudiante-1]++;
+				if(estudiantesSemestre[semestreEstudiante-1] > limiteEstudiantes) {
+					println("Por favor no sobrepasar el cupo de los salones. No es posible crear otro estudiante en el semestre " + (semestreEstudiante-1));
 					continue;
 				}
 				listaEstudiantes.add(new Estudiante(nombreEstudiante, semestreEstudiante));
@@ -462,6 +476,10 @@ public class Main extends ConsoleProgram {
 	public void leerEstudiantes(String archivo) {
 		try {
 			BufferedReader leer = new BufferedReader(new FileReader(archivo));
+			int[] estudiantesSemestre = new int[numeroSemestres];
+			for (int i = 0; i<numeroSemestres; i++) {
+				estudiantesSemestre[i] = 0;
+			}
 			while (true) {
 				String estudiante = leer.readLine();
 				if (estudiante == null) break;
@@ -478,6 +496,11 @@ public class Main extends ConsoleProgram {
 				}
 				for (int j = i+1; j<estudiante.length(); j++) {
 					semestre += estudiante.charAt(j);
+				}
+				estudiantesSemestre[Integer.valueOf(semestre)-1]++;
+				if(estudiantesSemestre[Integer.valueOf(semestre)-1] > limiteEstudiantes) {
+					println("Por favor no sobrepasar el cupo de los salones. No es posible crear otro estudiante en el semestre " + (Integer.valueOf(semestre)-1));
+					continue;
 				}
 				listaEstudiantes.add(new Estudiante(nombre.toUpperCase(), Integer.valueOf(semestre)));
 			}
@@ -507,6 +530,7 @@ public class Main extends ConsoleProgram {
 	}
 	
 	//Variables de clase
+	int limiteEstudiantes;
 	int numeroSemestres = 0;
 	ArrayList<Materia> materiasEstudiante;
 	ArrayList<Materia> listaMaterias = new ArrayList<Materia>() ;
