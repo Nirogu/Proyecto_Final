@@ -213,7 +213,7 @@ public class Main extends ConsoleProgram {
 				}
 				estudiantesSemestre[semestreEstudiante-1]++;
 				if(estudiantesSemestre[semestreEstudiante-1] > limiteEstudiantes) {
-					println("Por favor no sobrepasar el cupo de los salones. No es posible crear otro estudiante en el semestre " + (semestreEstudiante-1));
+					println("Por favor no sobrepasar el cupo de los salones. No es posible crear otro estudiante en el semestre " + semestreEstudiante);
 					continue;
 				}
 				listaEstudiantes.add(new Estudiante(nombreEstudiante, semestreEstudiante));
@@ -499,7 +499,7 @@ public class Main extends ConsoleProgram {
 				}
 				estudiantesSemestre[Integer.valueOf(semestre)-1]++;
 				if(estudiantesSemestre[Integer.valueOf(semestre)-1] > limiteEstudiantes) {
-					println("Por favor no sobrepasar el cupo de los salones. No es posible crear otro estudiante en el semestre " + (Integer.valueOf(semestre)-1));
+					println("Por favor no sobrepasar el cupo de los salones. No es posible crear otro estudiante en el semestre " + Integer.valueOf(semestre));
 					continue;
 				}
 				listaEstudiantes.add(new Estudiante(nombre.toUpperCase(), Integer.valueOf(semestre)));
